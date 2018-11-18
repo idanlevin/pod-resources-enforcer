@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: alpine-bad-limits
+  namespace: restricted
+  labels:
+    app: alpine-bad-limits
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: alpine-bad-limits
+    spec:
+      containers:
+        - name: alpine-bad-limits
+          image: alpine:3.8
+          args: [/bin/sh, -c, 'while true; do echo "hello!!"; sleep 10; done']
+          securityContext:
+            runAsUser: 2000
+            allowPrivilegeEscalation: false
+          resources:
+            limits:
+              cpu: 4
+              memory: 4Gi
+            requests:
+              cpu: 4
+              memory: 4Gi

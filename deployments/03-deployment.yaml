@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: pod-resources-enforcer
+  namespace: restricted
+  labels:
+    app: pod-resources-enforcer
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: pod-resources-enforcer
+    spec:
+      containers:
+        - name: pod-resources-enforcer
+          image: idanl/pod-resources-enforcer:0.1
+          args:
+            - --tls-cert-file=/etc/pod-resources-enforcer/certs/cert.pem
+            - --tls-private-key-file=/etc/pod-resources-enforcer/certs/key.pem
+            - -alsologtostderr
+            - -v=4
+            - 2>&1
+          securityContext:
+            runAsUser: 2000
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: certs
+              mountPath: /etc/pod-resources-enforcer/certs
+              readOnly: true
+      volumes:
+        - name: certs
+          # the certificates can be generated via a CSR request to K8s API Server
+          # check out `script/create_certs.sh` for easy secret generation
+          secret:
+            secretName: pod-resources-enforcer-cert

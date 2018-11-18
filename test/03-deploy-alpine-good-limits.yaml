@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: alpine-good-limits
+  namespace: restricted
+  labels:
+    app: alpine-good-limits
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: alpine-good-limits
+    spec:
+      containers:
+        - name: alpine-good-limits
+          image: alpine:3.8
+          args: [/bin/sh, -c, 'while true; do echo "hello!!"; sleep 10; done']
+          securityContext:
+            runAsUser: 2000
+            allowPrivilegeEscalation: false
+          resources:
+            limits:
+              cpu: 0.1
+              memory: 32Mi
+            requests:
+              cpu: 0.1
+              memory: 16Mi

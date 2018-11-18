@@ -1,0 +1,30 @@
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: pod-resources-enforcer
+  labels:
+    app: pod-resources-enforcer
+webhooks:
+    # the name of the webhook has to be a fqdn with at least two dots (x.y.z), but can by any fqdn
+  - name: resources-enforcement.microsoft.com
+    clientConfig:
+      # the service to call for the webhook
+      service:
+        name: pod-resources-enforcer
+        namespace: restricted
+        path: "/pods"
+      # the CA certificate should be provided so the apiserver can trust the TLS certificate of the webhook server. 
+      # Because we’ve signed our certificates with the Kubernetes API, we can use the CA cert from our kubeconfig -
+      # kubectl config view --raw -o json | jq -r '.clusters[0].cluster."certificate-authority-data"' 
+      # or get it from the cluster by calling - 
+      # kubectl get configmap -n kube-system extension-apiserver-authentication -o=jsonpath='{.data.client-ca-file}' | base64 | tr -d '\n'
+      caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUV5RENDQXJDZ0F3SUJBZ0lSQUxuZXViSWh6UEl1UmY5YUFkcnB0TDB3RFFZSktvWklodmNOQVFFTEJRQXcKRFRFTE1Ba0dBMVVFQXhNQ1kyRXdIaGNOTVRneE1URTFNVFUxTlRRNFdoY05NakF4TVRFME1UVTFOVFE0V2pBTgpNUXN3Q1FZRFZRUURFd0pqWVRDQ0FpSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnSVBBRENDQWdvQ2dnSUJBTWVGCm5OcGpPdGZJUWNaUVVKSGRDcEFUL0hEQzFoUnUwczhYSU03OXgzTU5JVklYK255UnFkM1RJOFVRKzI2Y1NXVG8KZVdlZlhoL3B0T1d0RHZacmVpV254RTcwcHV4UDZ6WElHQm8ycjlwZk1iSWxNbFFFV3lBakxBVGxvZmJJWVFVUgorR2ZYVGRYYStKYll6Z0FUNXdYbDZMaFNCcXp3TGhXSVZ4NEZXL29ZRVpsaW40VGpqWm5tMkVHS3M2L1lZSlB3CmhMUlpQcW9oaVFQWlIxRU5VNzJ4RU00a2xIZnpwWU5lK0lsSlBiU2Q3Z1pmSnBlQ05UZ28yV0RGMTN1czlmbkcKbHdqcDJXekVRWWVLdkt1THlxWUNLME1SWVBpNG5ndU9VRHRraGFqcVdBNGFOM2diejM4Tm1Tck1GZHJyd3hINAoxN29ZQkxOSEFqUFhpaUFFYVk1K2JrWkFPOXhBUGIzcDJVTWZJNDNJeExVNFYySXJEVjBzcXgrM3R0bFdSUG50CnlzbEpmYzBNMHF0cldqWU5DTlBqK1FmU3lmY1BNV3pBbzNqV3FXakEzQzA3bDNPK0srZEF1SmlSNS9uN2pCYnUKZUtxdmM2UHhFU3d5QTdFamx3UlFEcDhBUDlSWlZjKzBxb1p6c3lYalc0aDYxL3lEUlVzQU1pdHBQTUZHd09EbQpkUnBETlU0OUtJbVNvVjZFQWJOcGhkZ0h2dmFCNytmbFY4TDJXcDNhMWY3UGlDVExTZGNzTHBrTTFxTlpzMEpSCm8rb0dUeGhHa3hmbTd6VkJFSjlVaDNaNG1tT2hiSW9xcE1kZWhyVkR5d0I0RkJqQ1ZQZldtUUdCTVo5U0k0RUcKZWJSR1VkUXUvckpISytwZ01xdU5adDBJdTluUE5VdkRDenlWaCtZekFnTUJBQUdqSXpBaE1BNEdBMVVkRHdFQgovd1FFQXdJQ3BEQVBCZ05WSFJNQkFmOEVCVEFEQVFIL01BMEdDU3FHU0liM0RRRUJDd1VBQTRJQ0FRQ0g0RFdxCmp6dDhYK2VEbEVNZUlncDJUNEtXT1pySDZTa1ZNNEdTRHV4bElqOXVGcG4zUFJ1UVZNeG9jM01sU0FmYmRzWmYKZi82U1Q2aXJxbFZwQjRqTXhzOTVtWFMvd3V2NEJCV3dCVExjWFM5ZGZpN3IwQXFrMEd5ajZsblRCV3F4MVQxaApscmg4dVB1aEs4cnlBS1VtcGwyc0xrSDFVVXNHamFNRUtXNi9UWkJBSHBlNXJTTzVWYlJKYWIzNU11VGNZUFV3CjNieERDbEdWb1RZdDJCdndlcUlaV0lUTDdWYzMzYVN5Y01oSVluOE9oMklzWXc4akZHaW1wVXdkVnRIRDc0aDIKbm5RalcyRTlndEZPa3NVa1NuMkhzZHR3R1hIV21Pcks0TitiQ1VROVI3K3pWSmthV24rSTlpaGt0eGpiWXJCZgpkR1hBM09LN0pXZXZiZ2JnY24zVzN1bTY0UGs0ZCtxSlRadGlGbTVCOVpCaFJwSFFKQUxObFlKdi9zY1dLaldFCmEwb3hidm1leHVEa3dRbktIRW92dW5pUnpac0xBcXhFUkRJdTlpc2JQWXZCeDNIREJJV3dqazdLTHl3MzVrd3EKWFJpQlJITkZjU0lCcWFCTStscUFFQUpWZ0hzM09LcDdwU2F6VDVLaDV0MDlVNnMxLy9ydHh4bHZUak1UL0hvNQorWGM3T3FrT1NaTzgwcjQ3MUpsbUdmYk1iT3o5OVptenBZOHJHVnVYMWoxM1M4aFRqcnJjZlBtQXFPaitKTmFFClFwaklHc0ZrVUlkZVovREtmekNqdmgwL2JUNERTa0lUTjNZVjJ5cEFMTGlaellXd3lHMWZ2UkpCK2xhczBzU2sKSU5YSnhQNGtWYWoyZXhHMVdxV1EzRTNOUG9rUzlLa2lQTXpLSlE9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0t
+    rules:
+      - operations: ["CREATE"]
+        apiGroups: ["apps", ""]
+        apiVersions: ["v1"]
+        resources: ["pods", "deployments"]
+    namespaceSelector:
+      matchLabels:
+        # only apply to namespaces that have this label
+        resources-enforcement: enabled

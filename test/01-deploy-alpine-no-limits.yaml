@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: alpine-no-limits
+  namespace: restricted
+  labels:
+    app: alpine-no-limits
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: alpine-no-limits
+    spec:
+      containers:
+        - name: alpine-no-limits
+          image: alpine:3.8
+          args: [/bin/sh, -c, 'while true; do echo "hello!!"; sleep 10; done']
+          securityContext:
+            runAsUser: 2000
+            allowPrivilegeEscalation: false
