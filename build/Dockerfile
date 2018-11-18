@@ -14,7 +14,7 @@ WORKDIR /go/src/enforcer
 RUN dep ensure -vendor-only
 
 # Copy the source code and build it
-COPY . /go/src/enforcer/
+COPY ./cmd/pod-resources-enforcer/ /go/src/enforcer/
 RUN go build -o /bin/enforcer
 
 # This results in a single layer image
