@@ -14,10 +14,6 @@ webhooks:
         namespace: restricted
         path: "/pods"
       # the CA certificate should be provided so the apiserver can trust the TLS certificate of the webhook server. 
-      # Because we’ve signed our certificates with the Kubernetes API, we can use the CA cert from our kubeconfig -
-      # kubectl config view --raw -o json | jq -r '.clusters[0].cluster."certificate-authority-data"' 
-      # or get it from the cluster by calling - 
-      # kubectl get configmap -n kube-system extension-apiserver-authentication -o=jsonpath='{.data.client-ca-file}' | base64 | tr -d '\n'
       caBundle: <PUT YOUR CA BUNDLE BASE64>
     rules:
       - operations: ["CREATE"]
