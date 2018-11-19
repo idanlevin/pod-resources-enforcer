@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: pod-resources-enforcer
-          image: idanl/pod-resources-enforcer:0.1
+          image: idanl/pod-resources-enforcer:0.2
           args:
             - --tls-cert-file=/etc/pod-resources-enforcer/certs/cert.pem
             - --tls-private-key-file=/etc/pod-resources-enforcer/certs/key.pem
