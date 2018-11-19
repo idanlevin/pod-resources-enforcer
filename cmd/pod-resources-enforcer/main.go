@@ -150,25 +150,32 @@ func admitPods(ar v1beta1.AdmissionReview) *v1beta1.AdmissionResponse {
 	response.Allowed = true
 
 	var msg string
-	// iterate over the pod containers
-	for _, container := range pod.Spec.Containers {
-		glog.V(2).Info(fmt.Sprintf("Validating container name: %s", container.Name))
-		requests := container.Resources.Requests
-		// check for requests
-		if requests.Cpu() == nil || requests.Cpu().IsZero() ||
-			requests.Memory() == nil || requests.Memory().IsZero() {
-			response.Allowed = false
-			msg = fmt.Sprintf("Container '%s' does not have CPU and/or Memory requests defined", container.Name)
-			break
-		}
 
-		limits := container.Resources.Limits
-		// check for limits
-		if limits.Cpu() == nil || limits.Cpu().IsZero() ||
-			limits.Memory() == nil || limits.Memory().IsZero() {
-			response.Allowed = false
-			msg = fmt.Sprintf("Container '%s' does not have CPU and/or Memory limits defined", container.Name)
-			break
+	// check if LimitRanger admission controller added default values
+	if _, ok := pod.ObjectMeta.Annotations["kubernetes.io/limit-ranger"]; ok {
+		response.Allowed = false
+		msg = fmt.Sprintf("LimitRanger injected default resources request and limit which is forbidden")
+	} else {
+		// iterate over the pod containers
+		for _, container := range pod.Spec.Containers {
+			glog.V(2).Info(fmt.Sprintf("Validating container name: %s", container.Name))
+			requests := container.Resources.Requests
+			// check for requests
+			if requests.Cpu() == nil || requests.Cpu().IsZero() ||
+				requests.Memory() == nil || requests.Memory().IsZero() {
+				response.Allowed = false
+				msg = fmt.Sprintf("Container '%s' does not have CPU and/or Memory requests defined", container.Name)
+				break
+			}
+
+			limits := container.Resources.Limits
+			// check for limits
+			if limits.Cpu() == nil || limits.Cpu().IsZero() ||
+				limits.Memory() == nil || limits.Memory().IsZero() {
+				response.Allowed = false
+				msg = fmt.Sprintf("Container '%s' does not have CPU and/or Memory limits defined", container.Name)
+				break
+			}
 		}
 	}
 
