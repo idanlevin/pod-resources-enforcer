@@ -1,9 +1,9 @@
-# pod-resources-enforcer
+# Pod Resources Enforcer
 A Kubernetes Dynamic Admission Controller that forces pods to specify resources request and limit, even when using LimitRange.
 
 ## Prerequisites
 
-1. Docker
+1. Docker (if you want to build it yourself)
 
 2. Kubernetes 1.9.0 or above with the `admissionregistration.k8s.io/v1beta1` API enabled. Verify that by the following command:
 ```
@@ -20,7 +20,7 @@ cd ~/pod-resources-enforcer
 docker build -t <IMAGE TAG> -f build/Dockerfile  .
 ```
 
-Replace <IMAGE TAG> with your preffered container registry and image name.
+Replace `<IMAGE TAG>` with your preffered container registry and image name.
 
 ## Deploy
 
